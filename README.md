@@ -18,13 +18,13 @@ If you do not have a laptop/computer running a Linux system as the host, you can
 The VirtualBox extension package, which can be downloaded from: https://www.virtualbox.org/wiki/Downloads, and then once the guest OS (Ubuntu 16 in this case) is configured and installed, use the commands below on the Ubuntu as the root user:
 
 4.1. VirtualBox Extension Package Installation on Ubuntu
-```
+```bash
 apt update
 apt install virtualbox-ext-pack virtualbox-guest-utils virtualbox-guest-x11 virtualbox-guest-dkms
 ```  
 
 4.2. Add your user to the vboxusers group to enable USB passthrough
-```
+```bash
 usermod -aG vboxusers root
 ```  
 and then ```reboot``` for the changes to take effect.
@@ -37,8 +37,8 @@ Once everything is done, right-click on the Ubuntu VM and hover over the USB set
 
 Once you turn on the VM, from the menu bar of the Ubuntu VM (displayed below), click on the USB icon and select the USB that you added in the previous step. Once this is done, you should be able to see it attached using the command ```lsblk```.
 
-```
 Example output:
+```bash
 root@Ubuntu:~# lsblk
 NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
 sda      8:0    0    5G  0 disk 
@@ -74,7 +74,9 @@ Accept the ```default ending``` (full size of disk or specify, explained below).
 When prompted about ```removing the signature```: say N for no (if you are asked).<br>
 Type ```w``` → write changes and exit.
 
-Here, an important thing to consider is the starting and ending sectors for the partition of sdb2 that you will be deleting. When you attempt to create a new one, it should have the same starting sector to avoid overlapping with the boot partitions. However, the ending sector could either be the default value, which is usually the entire remaining space on the storage, or if you want the root partition to be set to a specific amount rather than taking the entire storage, you can specify the ending sector. For me, since I had a 64GB SD card, I only wanted 10GB for the root and leave the rest for other applications such as NAS, File Sharing, etc. This is how you can calculate the ending sector for the amount of 10GB, assuming you start from the starting sector of 147456, which was my case:
+> Here, an important thing to consider is the starting and ending sectors for the partition of sdb2 that you will be deleting. When you attempt to create a new one, it should have the same starting sector to avoid overlapping with the boot partition. However, the ending sector could either be the default value, which is usually the entire remaining space on the storage, or if you want this root partition to be set to a specific amount rather than taking the entire storage, you can specify the ending sector. For me, since I had a 64GB SD card, I only wanted 10GB for the root and leave the rest for other usecases such as NAS, File Sharing, etc.
+
+This is how you can calculate the ending sector for the amount of 10GB, assuming you start from the starting sector of 147456, which was my case:
 
 Start sector is 147456 (you noted this earlier).<br>
 10 GB in sectors:<br>
@@ -87,7 +89,7 @@ End sector = 147456 + 20,000,000 - 1 = **20147455**.<br>
 
 Now, re-check and resize the filesystem:
 
-```
+```bash
 e2fsck -f /dev/sdb2
 resize2fs /dev/sdb2
 ```
@@ -95,13 +97,13 @@ resize2fs /dev/sdb2
 
 To verify, you can use:
 
-```
+```bash
 sudo lsblk
 ```
 
 
 Example output:
-```
+```bash
 root@Ubuntu:~# sudo lsblk
 NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
 sda      8:0    0    5G  0 disk 
@@ -114,4 +116,4 @@ sdb      8:16   1   59G  0 disk
 sr0     11:0    1 1024M  0 rom
 ```
 
-Lastly, if you want to create an additional partition for other applications like what I did, you can repeat the same steps from No. x to x, but make sure that the additional partitions have some gaps in between them for safety, to avoid overlap. For example, since the ending sector for sdb2 was 20147455, you can have the starting sector for sdb3 be 20147455 + 1000 (which is 20148455). 
+Lastly, if you want to create an additional partition for other applications like what I did, you can repeat the same partitioning, but make sure that the additional partitions have some gaps in between them for safety, to avoid overlap. For example, since the ending sector for sdb2 was 20147455, you can have the starting sector for sdb3 be 20147455 **+ 1000** (which is 20148455). 
