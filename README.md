@@ -117,3 +117,7 @@ sr0     11:0    1 1024M  0 rom
 ```
 
 Lastly, if you want to create an additional partition for other applications like what I did, you can repeat the same partitioning, but make sure that the additional partitions have some gaps in between them for safety, to avoid overlap. For example, since the ending sector for sdb2 was 20147455, you can have the starting sector for sdb3 be 20147455 **+ 1000** (which is 20148455). 
+
+## Disclaimer
+
+Please be advised that while the steps outlined in this guide have been carefully reviewed and tested, the author cannot be held responsible for any damage, data loss, or other unintended consequences that may arise from following these instructions. It is strongly recommended to back up all important data before proceeding with any changes to your system. By following this guide, you acknowledge that you do so at your own risk.
