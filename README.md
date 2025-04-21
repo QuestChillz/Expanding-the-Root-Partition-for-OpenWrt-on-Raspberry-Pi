@@ -2,7 +2,7 @@
 
 For many individuals attempting to run the OpenWrt OS for the first time on their Raspberry Pi or other boards, having sufficient storage volume attached may not resolve an issue with the limitation of root partition sizes of OpenWrt OS images that are shipped with less than 100 MB in size. This limitation can become troublesome after installing some packages and starting the OS. Therefore, in this guide, we will go through the steps to increase the size of the root directory to a desired size, allowing you to install as many software applications and packages as necessary. 
 
-## Prerequisites
+## 1. Prerequisites
 
 To accomplish this, please prepare the following items in advance:
 
@@ -14,24 +14,24 @@ To accomplish this, please prepare the following items in advance:
 
 4. **A microSD card reader** (for Raspberry Pi) or an **external drive** connected via USB to a secondary system (your laptop/computer running a Linux system).
 
-  4.1. If you do not have a laptop/computer running a Linux system as the host, you can use virtualization software such as VMware/VirtualBox/Hyper-V/etc. to install a Linux-based OS, such as Ubuntu. In this guide, I downloaded and used the first and smallest version of Ubuntu, which was Ubuntu 16, on VirtualBox running on my macOS laptop with USB passthrough enabled. Since the USB microSD card reader is connected to my host macOS laptop using the USB port, it was necessary to first install:
+If you do not have a laptop/computer running a Linux system as the host, you can use virtualization software such as VMware/VirtualBox/Hyper-V/etc. to install a Linux-based OS, such as Ubuntu. In this guide, I downloaded and used the first and smallest version of Ubuntu, which was Ubuntu 16, on VirtualBox running on my macOS laptop with USB passthrough enabled. Since the USB microSD card reader is connected to my host macOS laptop using the USB port, it was necessary to first install:
 The VirtualBox extension package, which can be downloaded from: https://www.virtualbox.org/wiki/Downloads, and then once the guest OS (Ubuntu 16 in this case) is configured and installed, use the commands below on the Ubuntu as the root user:
 
-  4.2. 
-  ```
-  apt update
-  apt install virtualbox-ext-pack virtualbox-guest-utils virtualbox-guest-x11 virtualbox-guest-dkms
-  ```  
-  4.3.
-  Add your user to the vboxusers group to enable USB passthrough
-  ```
+4.1. VirtualBox Extension Package Installation on Ubuntu
+```
+apt update
+apt install virtualbox-ext-pack virtualbox-guest-utils virtualbox-guest-x11 virtualbox-guest-dkms
+```  
+
+4.2. Add your user to the vboxusers group to enable USB passthrough
+```
 usermod -aG vboxusers root
 ```  
 and then ```reboot``` for the changes to take effect.
 
 >Note that you should install an extension package that corresponds to the version of VirtualBox that you have on your system; otherwise, it won’t work. Also, during this process, all running VMs must be turned off.
 
-## Access the SD Card in Ubuntu VM
+## 2. Accessing the SD Card in Ubuntu VM
 
 Once everything is done, right-click on the Ubuntu VM and hover over the USB setting where you check the **Enable USB controller**. and then select the version that corresponds to yours (it is usually **USB 2** and above, but again, check with your version). Then, from the **USB filter list**, add your device using the plus sign and run the VM.
 
@@ -56,7 +56,7 @@ sr0     11:0    1 1024M  0 rom
 /dev/sdb1 → boot partition (64 MB)<br>
 and /dev/sdb2 → root partition (104 MB; this is what we’ll expand).
 
-# Here is where our partitioning work begins:
+# 3. Partitioning:
 
 ```
 fdisk /dev/sdb
