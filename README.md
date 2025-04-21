@@ -1,6 +1,6 @@
 # Expanding the Root Partition for OpenWrt on Raspberry Pi
 
-For many individuals attempting to run the OpenWrt OS for the first time on their Raspberry Pi or other boards, having sufficient storage volume attached may not resolve an issue with the limitation of root partition sizes of OpenWrt OS images that are shipped with less than 100 MB in size. This limitation can become troublesome after installing some packages and starting the OS. Therefore, in this guide, we will go through the steps to increase the size of the root directory to a desired size, allowing you to install as many software applications and packages as necessary. 
+For those attempting to run the OpenWrt OS for the first time on their Raspberry Pi or other boards, having sufficient storage volume attached may not resolve an issue with the limitation of root partition sizes of OpenWrt OS images that are shipped with less than 100 MB in size. This limitation can become troublesome after installing some packages and starting the OS. Therefore, in this guide, we will go through the steps to increase the size of the root directory to a desired size, allowing you to install as many software applications and packages as necessary. 
 
 ## 1. Prerequisites
 
