@@ -1,37 +1,41 @@
+# Expanding the Root Partition for OpenWrt on Raspberry Pi
+
 For many individuals attempting to run the OpenWrt OS for the first time on their Raspberry Pi or other boards, having sufficient storage volume attached may not resolve an issue with the limitation of root partition sizes of OpenWrt OS images that are shipped with less than 100 MB in size. This limitation can become troublesome after installing some packages and starting the OS. Therefore, in this guide, we will go through the steps to increase the size of the root directory to a desired size, allowing you to install as many software applications and packages as necessary. 
+
+## Prerequisites
 
 To accomplish this, please prepare the following items in advance:
 
-1. Download the Ext4 format version of the OpenWrt OS that corresponds to your board (in my case, using the Raspberry Pi 4 with processor model BCM 2711 was necessary the download link is: https://downloads.openwrt.org/snapshots/targets/bcm27xx/bcm2711/ ). Note that sometimes on the OpenWrt website, they promote the SquashFS format version, which is slightly faster than Ext4; however, due to being read-only, it cannot be used for partitioning. The trade-off here is worth using the Ext4 format since the difference is negligible. 
+1. **OpenWrt OS (Ext4 format)**: Download the Ext4 format version of the OpenWrt OS that corresponds to your board (in my case, using the Raspberry Pi 4 with processor model BCM 2711 was necessary the download link is: https://downloads.openwrt.org/snapshots/targets/bcm27xx/bcm2711/ ). Note that sometimes on the OpenWrt website, they promote the SquashFS format version, which is slightly faster than Ext4; however, due to being read-only, it cannot be used for partitioning. The trade-off here is worth using the Ext4 format since the difference is negligible. 
 
-2. Raspberry Pi board (or any other board you are using to boot up your OpenWrt OS). 
+2. **Raspberry Pi (or other board)**: Raspberry Pi board (or any other board you are using to boot up your OpenWrt OS). 
 
-3. Backup of all important data (because mistakes during partition resizing and removal can lead to file corruption).
+3. **Backup your data**: Backup of all important data (because mistakes during partition resizing and removal can lead to file corruption).
 
-4. A microSD card reader (for Raspberry Pi) or an external drive connected via USB to a secondary system (your laptop/computer running a Linux system).
+4. **A microSD card reader** (for Raspberry Pi) or an **external drive** connected via USB to a secondary system (your laptop/computer running a Linux system).
 
 4.1. If you do not have a laptop/computer running a Linux system as the host, you can use virtualization software such as VMware/VirtualBox/Hyper-V/etc. to install a Linux-based OS, such as Ubuntu. In this guide, I downloaded and used the first and smallest version of Ubuntu, which was Ubuntu 16, on VirtualBox running on my macOS laptop with USB passthrough enabled. Since the USB microSD card reader is connected to my host macOS laptop using the USB port, it was necessary to first install:
 The VirtualBox extension package, which can be downloaded from: https://www.virtualbox.org/wiki/Downloads, and then once the guest OS (Ubuntu 16 in this case) is configured and installed, use the commands below on the Ubuntu as the root user:
 
-Step 1: 
+Step 4.2. 
 apt update
 apt install virtualbox-ext-pack virtualbox-guest-utils virtualbox-guest-x11 virtualbox-guest-dkms
 
-Step 2:
+Step 4.3.
 Add your user to the vboxusers group to enable USB passthrough
 usermod -aG vboxusers root
 
 and then “reboot” for the changes to take effect.
 
+>Note that you should install an extension package that corresponds to the version of VirtualBox that you have on your system; otherwise, it won’t work. Also, during this process, all running VMs must be turned off.
 
-
-
-*Note that you should install an extension package that corresponds to the version of VirtualBox that you have on your system; otherwise, it won’t work. Also, during this process, all running VMs must be turned off.
+## Access the SD Card in Ubuntu VM
 
 Once everything is done, right-click on the Ubuntu VM and hover over the USB setting where you check the “Enable USB controller” and then select the version that corresponds to yours (it is usually USB 2 and above, but again, check with your version). Then, from the USB filter list, add your device using the plus sign and run the VM.
 
 Once you turn on the VM, from the menu bar of the Ubuntu VM (displayed below), click on the USB icon and select the USB that you added in the previous step. Once this is done, you should be able to see it attached using the command “lsblk”.
 
+```
 Example output:
 root@Ubuntu:~# lsblk
 NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
@@ -42,12 +46,13 @@ sda      8:0    0    5G  0 disk
 sdb      8:16   1   59G  0 disk 
 |-sdb1   8:17   1   64M  0 part 
 `-sdb2   8:18   1  104M  0 part 
-sr0     11:0    1 1024M  0 rom  
+sr0     11:0    1 1024M  0 rom
+```  
 
-To summarize:
-/dev/sdb → full SD card (59 GB)
-/dev/sdb1 → boot partition (64 MB)
-and /dev/sdb2 → root partition (104 MB; this is what we’ll expand).
+> To summarize:
+> /dev/sdb → full SD card (59 GB)
+> /dev/sdb1 → boot partition (64 MB)
+> and /dev/sdb2 → root partition (104 MB; this is what we’ll expand).
 
 Here is where our partitioning work begins:
 
@@ -77,8 +82,8 @@ End sector = 147456 + 20,000,000 - 1 = 20147455.
 
 Now, re-check and resize the filesystem:
 
-e2fsck -f /dev/sdb2
-resize2fs /dev/sdb2
+```e2fsck -f /dev/sdb2
+resize2fs /dev/sdb2```
 
 
 To verify, you can use:
@@ -87,7 +92,7 @@ sudo lsblk
 
 
 Example output:
-root@Ubuntu:~# sudo lsblk
+```root@Ubuntu:~# sudo lsblk
 NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
 sda      8:0    0    5G  0 disk 
 |-sda1   8:1    0    4G  0 part /
@@ -96,7 +101,7 @@ sda      8:0    0    5G  0 disk
 sdb      8:16   1   59G  0 disk 
 |-sdb1   8:17   1   64M  0 part 
 `-sdb2   8:18   1 58.9G  0 part 
-sr0     11:0    1 1024M  0 rom 
+sr0     11:0    1 1024M  0 rom```
 
 
 Lastly, if you want to create an additional partition for other applications like what I did, you can repeat the same steps from No. x to x, but make sure that the additional partitions have some gaps in between them for safety to avoid overlap. For example, since the ending sector for sdb2 was 20147455, you can have the starting sector for sdb3 be 20147455 + 1000 (which is 20148455). 
