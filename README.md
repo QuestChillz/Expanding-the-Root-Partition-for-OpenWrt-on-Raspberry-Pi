@@ -120,6 +120,122 @@ sr0     11:0    1 1024M  0 rom
 
 Lastly, if you want to create an additional partition for other applications like what I did, you can repeat the same partitioning, but make sure that the additional partitions have some gaps in between them for safety, to avoid overlap. For example, since the ending sector for sdb2 was 20147455, you can have the starting sector for sdb3 be 20147455 **+ 1000** (which is 20148455). 
 
+# 4. Mounting third, fourth, and further partitions on OpenWrt
+
+Since OpenWrt only automatically mounts the boot and root partitions created during OS installation, any additional partitions created on a secondary Linux OS (Ubuntu in this case) will not be mounted or shown in OpenWrt. They must be mounted manually using the following commands and steps.
+
+1. List all partitions and identify **mmcblk0p3** as the target (≈49.3 GiB)
+
+```bash
+root@OpenWrt:~# cat /proc/partitions
+major minor  #blocks  name
+
+   1        0       4096 ram0
+   1        1       4096 ram1
+   1        2       4096 ram2
+   1        3       4096 ram3
+   1        4       4096 ram4
+   1        5       4096 ram5
+   1        6       4096 ram6
+   1        7       4096 ram7
+   1        8       4096 ram8
+   1        9       4096 ram9
+   1       10       4096 ram10
+   1       11       4096 ram11
+   1       12       4096 ram12
+   1       13       4096 ram13
+   1       14       4096 ram14
+   1       15       4096 ram15
+ 179        0   61798400 mmcblk0
+ 179        1      65536 mmcblk0p1
+ 179        2   10000000 mmcblk0p2
+ 179        3   51724172 mmcblk0p3
+```
+
+2. Check if the **MMC/SD kernel module** is installed
+```
+opkg update
+opkg list | grep kmod-mmc
+```
+
+4. If not present, install the required packages
+```
+opkg update
+opkg install kmod-mmc kmod-fs-ext4 block-mount
+```
+5. Install the **file` utility** to detect the filesystem
+```
+opkg update
+opkg install file
+```
+6. Inspect the filesystem on the partition
+```file -s /dev/mmcblk0p3```
+
+If unformatted or you wish to reformat:
+```mkfs.ext4 /dev/mmcblk0p3```
+
+Example output:
+```bash
+root@OpenWrt:~# file -s /dev/mmcblk0p3
+/dev/mmcblk0p3: Linux rev 1.0 ext4 filesystem data, UUID=d9c427d3-f325-4064-919f-b96afcc5cd56 (needs journal recovery) (extents) (large files) (huge files)
+```
+
+6. Create a mount point and mount the partition
+```
+mkdir -p /mnt/data
+mount -t ext4 /dev/mmcblk0p3 /mnt/data
+```
+
+8. Confirm with disk free output: ```df -h```
+
+Example output:
+```bash
+root@OpenWrt:~# df -h
+Filesystem                Size      Used Available Use% Mounted on
+/dev/root                 9.4G     26.1M      9.4G   0% /
+tmpfs                   928.4M     76.0K    928.3M   0% /tmp
+/dev/mmcblk0p1           63.9M     17.8M     46.1M  28% /boot
+tmpfs                   512.0K         0    512.0K   0% /dev
+/dev/mmcblk0p3           48.4G     24.0K     45.9G   0% /mnt/data
+```
+
+8. Enable auto‑mount at boot by editing ```/etc/config/fstab```
+
+Add the following block:
+```cat << 'EOF' >> /etc/config/fstab```
+
+```bash
+config mount
+    option target   '/mnt/data'
+    option device   '/dev/mmcblk0p3'
+    option fstype   'ext4'
+    option options  'rw,sync'
+    option enabled  '1'
+EOF
+```
+
+
+9. Enable and start **fstab service**
+```/etc/init.d/fstab enable
+/etc/init.d/fstab start
+```
+
+11. ```Reboot``` to confirm persistence and after reboot, verify:
+```
+mount | grep /mnt/data
+df -h /mnt/data
+```
+
+Example output:
+```bash
+root@OpenWrt:~# mount | grep /mnt/data
+/dev/mmcblk0p3 on /mnt/data type ext4 (rw,sync,relatime)
+root@OpenWrt:~# df -h /mnt/data
+Filesystem                Size      Used Available Use% Mounted on
+/dev/mmcblk0p3           48.4G     24.0K     45.9G   0% /mnt/data
+```
+
+
 ## Disclaimer
 
 Please be advised that while the steps outlined in this guide have been carefully reviewed and tested, the author cannot be held responsible for any damage, data loss, or other unintended consequences that may arise from following these instructions. It is strongly recommended to back up all important data before proceeding with any changes to your system. By following this guide, you acknowledge that you do so at your own risk.
