@@ -117,6 +117,31 @@ sr0     11:0    1 1024M  0 rom
 
 Lastly, if you want to create an additional partition for other applications like what I did, you can repeat the same partitioning, but make sure that the additional partitions have some gaps in between them for safety, to avoid overlap. For example, since the ending sector for sdb2 was 20147455, you can have the starting sector for sdb3 be 20147455 **+ 1000** (which is 20148455). 
 
+> In case you get an error similar to the following after finishing the formatting via fdisk:
+> 
+> Example output:
+> ```
+> root@Ubuntu:~# e2fsck -f /dev/sdb3
+> e2fsck 1.42.13 (17-May-2015)
+> ext2fs_open2: Bad magic number in super-block
+> e2fsck: Superblock invalid, trying backup blocks...
+> e2fsck: Bad magic number in super-block while trying to open /dev/sdb3
+> 
+> The superblock could not be read or does not describe a valid ext2/ext3/ext4
+> filesystem.  If the device is valid and it really contains an ext2/ext3/ext4
+> filesystem (and not swap or ufs or something else), then the superblock
+> is corrupt, and you might try running e2fsck with an alternate superblock:
+>     e2fsck -b 8193 <device>
+>  or
+>     e2fsck -b 32768 <device>
+> ```
+> 
+> Then, please make sure to check the partition type via the command: ```sudo file -s /dev/sdb3```
+> If you get “data” or something not ext*, then it’s not formatted or is a different FS.
+> 
+> If it’s unformatted, run ```sudo mkfs.ext4 /dev/sdb3``` and you should be good to go. 
+
+
 # 4. Mounting third, fourth, and further partitions on OpenWrt
 
 Since OpenWrt only automatically mounts the boot and root partitions created during OS installation, any additional partitions created on a secondary Linux OS (Ubuntu in this case) will not be mounted or shown in OpenWrt. They must be mounted manually using the following commands and steps.
