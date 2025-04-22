@@ -75,18 +75,14 @@ fdisk /dev/sdb
 - When prompted about ```removing the signature```: say N for no (if you are asked).<br>
 
 > Here, an important thing to consider is the starting and ending sectors for the partition of sdb2 that you will be deleting. When you attempt to create a new one, it should have the same starting sector to avoid overlapping with the boot partition. However, the ending sector could either be the default value, which is usually the entire remaining space on the storage, or if you want this root partition to be set to a specific amount rather than taking the entire storage, you can specify the ending sector. For me, since I had a 64GB SD card, I only wanted 10GB for the root and leave the rest for other use cases such as NAS, File Sharing, etc.
-
-This is how you can calculate the ending sector for the amount of 10GB, assuming you start from the starting sector of 147456, which was my case:
-
-- Start sector is 147456 (you noted this earlier).<be>
-
-10 GB in sectors:<br>
-- 1 GB = 2,000,000 sectors (since each sector is 512 bytes).<br>
-Therefore, 10 GB = 10 × 2,000,000 = 20,000,000 sectors.<be>
-
-End sector for the 10 GB partition:<be>
-- End sector = Start sector + 20,000,000 - 1.<be>
-- End sector = 147456 + 20,000,000 - 1 = **20147455**
+>This is how you can calculate the ending sector for the amount of 10GB, assuming you start from the starting sector of 147456, which was my case:
+>- Start sector is 147456 (you noted this earlier).<be>
+>10 GB in sectors:<br>
+>- 1 GB = 2,000,000 sectors (since each sector is 512 bytes).<be>
+>Therefore, 10 GB = 10 × 2,000,000 = 20,000,000 sectors.<be>
+>End sector for the 10 GB partition:<be>
+>- End sector = Start sector + 20,000,000 - 1.<be>
+>- End sector = 147456 + 20,000,000 - 1 = **20147455**
 
 - Type ```w``` → write changes and exit.
 
