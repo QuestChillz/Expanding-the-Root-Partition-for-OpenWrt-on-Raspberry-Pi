@@ -124,7 +124,7 @@ Lastly, if you want to create an additional partition for other applications lik
 
 Since OpenWrt only automatically mounts the boot and root partitions created during OS installation, any additional partitions created on a secondary Linux OS (Ubuntu in this case) will not be mounted or shown in OpenWrt. They must be mounted manually using the following commands and steps.
 
-1. List all partitions and identify **mmcblk0p3** as the target (≈49.3 GiB)
+1. List all partitions and identify **mmcblk0p3** as the target (≈49.3 GiB) using the ```cat /proc/partitions``` command:
 
 ```bash
 root@OpenWrt:~# cat /proc/partitions
@@ -152,7 +152,7 @@ major minor  #blocks  name
  179        3   51724172 mmcblk0p3
 ```
 
-2. Check if the **MMC/SD kernel module** is installed
+2. Check if the **MMC/SD kernel module** is installed:
 ```
 opkg update
 opkg list | grep kmod-mmc
@@ -171,8 +171,8 @@ opkg install file
 6. Inspect the filesystem on the partition
 ```file -s /dev/mmcblk0p3```
 
-If unformatted or you wish to reformat:
-```mkfs.ext4 /dev/mmcblk0p3```
+> If unformatted or you wish to reformat:
+> ```mkfs.ext4 /dev/mmcblk0p3```
 
 Example output:
 ```bash
@@ -186,7 +186,7 @@ mkdir -p /mnt/data
 mount -t ext4 /dev/mmcblk0p3 /mnt/data
 ```
 
-8. Confirm with disk free output: ```df -h```
+8. Confirm with disk free output: ```df -h```:
 
 Example output:
 ```bash
