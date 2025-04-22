@@ -163,7 +163,7 @@ opkg list | grep kmod-mmc
 opkg update
 opkg install kmod-mmc kmod-fs-ext4 block-mount
 ```
-5. Install the **file` utility** to detect the filesystem
+5. Install the **file utility** to detect the filesystem
 ```
 opkg update
 opkg install file
@@ -199,12 +199,11 @@ tmpfs                   512.0K         0    512.0K   0% /dev
 /dev/mmcblk0p3           48.4G     24.0K     45.9G   0% /mnt/data
 ```
 
-8. Enable auto‑mount at boot by editing ```/etc/config/fstab```
+8. Enable auto‑mount at boot by editing ```/etc/config/fstab```:
 
 Add the following block:
-```cat << 'EOF' >> /etc/config/fstab```
-
-```bash
+```
+cat << 'EOF' >> /etc/config/fstab
 config mount
     option target   '/mnt/data'
     option device   '/dev/mmcblk0p3'
