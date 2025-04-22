@@ -158,17 +158,17 @@ opkg update
 opkg list | grep kmod-mmc
 ```
 
-4. If not present, install the required packages
+3. If not present, install the required packages
 ```
 opkg update
 opkg install kmod-mmc kmod-fs-ext4 block-mount
 ```
-5. Install the **file utility** to detect the filesystem
+4. Install the **file utility** to detect the filesystem
 ```
 opkg update
 opkg install file
 ```
-6. Inspect the filesystem on the partition
+5. Inspect the filesystem on the partition
 ```file -s /dev/mmcblk0p3```
 
 > If unformatted or you wish to reformat:
@@ -186,7 +186,7 @@ mkdir -p /mnt/data
 mount -t ext4 /dev/mmcblk0p3 /mnt/data
 ```
 
-8. Confirm with disk free output: ```df -h```:
+7. Confirm with disk free output: ```df -h```:
 
 Example output:
 ```bash
@@ -219,7 +219,7 @@ EOF
 /etc/init.d/fstab start
 ```
 
-11. ```Reboot``` to confirm persistence and after reboot, verify:
+10. ```Reboot``` to confirm persistence and after reboot, verify:
 ```
 mount | grep /mnt/data
 df -h /mnt/data
