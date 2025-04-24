@@ -10,9 +10,7 @@ To accomplish this, please prepare the following items in advance:
 
 2. **Raspberry Pi (or other board)**: Raspberry Pi board (or any other board you are using to boot up your OpenWrt OS). 
 
-3. **Backup your data**: Backup ```/root``` directory in openwrt before partitioning 
-
-> Since all Wi-Fi and other module packages are initially shipped and installed in the root directory, deleting the root partition and creating a new one results in the loss of all those files. Therefore, based on the tests I have conducted, this leads to malfunctions in various parts of the system, including the Wi-Fi firmware. It is recommended to take a backup before partitioning, specifically the boot directory (the boot partition has a total size of 60 MB, but you don’t need to worry about the small size, as the root directory’s compressed file does not exceed 6 or 7 MB). After restoring the backup, we can safely remove it, which will help clear up the boot directory. I believe this approach will keep configuration files and other packages intact. 
+3. **Backup your data**: Backup ```/root``` directory in openwrt before partitioning (Just in case)
 
 5. **A microSD card reader** (for Raspberry Pi) or an **external drive** connected via USB to a secondary system (your laptop/computer running a Linux system).
 
