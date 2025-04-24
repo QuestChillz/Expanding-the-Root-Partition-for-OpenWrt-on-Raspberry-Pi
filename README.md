@@ -10,9 +10,11 @@ To accomplish this, please prepare the following items in advance:
 
 2. **Raspberry Pi (or other board)**: Raspberry Pi board (or any other board you are using to boot up your OpenWrt OS). 
 
-3. **Backup your data**: Backup of all important data (because mistakes during partition resizing and removal can lead to file corruption).
+3. **Backup your data**: Backup ```/root``` directory in openwrt before partitioning 
 
-4. **A microSD card reader** (for Raspberry Pi) or an **external drive** connected via USB to a secondary system (your laptop/computer running a Linux system).
+> Since all Wi-Fi and other module packages are initially shipped and installed in the root directory, deleting the root partition and creating a new one results in the loss of all those files. Therefore, based on the tests I have conducted, this leads to malfunctions in various parts of the system, including the Wi-Fi firmware. It is recommended to take a backup before partitioning, specifically the boot directory (the boot partition has a total size of 60 MB, but you don’t need to worry about the small size, as the root directory’s compressed file does not exceed 6 or 7 MB). After restoring the backup, we can safely remove it, which will help clear up the boot directory. I believe this approach will keep configuration files and other packages intact. 
+
+5. **A microSD card reader** (for Raspberry Pi) or an **external drive** connected via USB to a secondary system (your laptop/computer running a Linux system).
 
 If you do not have a laptop/computer running a Linux system as the host, you can use virtualization software such as VMware/VirtualBox/Hyper-V/etc. to install a Linux-based OS, such as Ubuntu. In this guide, I downloaded and used the first and smallest version of Ubuntu, which was Ubuntu 16, on VirtualBox running on my macOS laptop with USB passthrough enabled. Since the USB microSD card reader is connected to my host macOS laptop using the USB port, it was necessary to first install:
 The VirtualBox extension package, which can be downloaded from: https://www.virtualbox.org/wiki/Downloads, and then once the guest OS (Ubuntu 16 in this case) is configured and installed, use the commands below on the Ubuntu as the root user:
