@@ -6,7 +6,7 @@ For those attempting to run the OpenWrt OS for the first time on their Raspberry
 
 To accomplish this, please prepare the following items in advance:
 
-1. **OpenWrt OS (Ext4 format)**: Download the Ext4 format version of the OpenWrt OS that corresponds to your board (in my case, using the Raspberry Pi 4 with processor model BCM 2711 was necessary the download link is: https://downloads.openwrt.org/snapshots/targets/bcm27xx/bcm2711/ ). Note that sometimes on the OpenWrt website, they promote the SquashFS format version, which is slightly faster than Ext4; however, due to being read-only, it cannot be used for partitioning. The trade-off here is worth using the Ext4 format since the difference is negligible. 
+1. **OpenWrt OS (Ext4 format)**: Download the Ext4 format version of the OpenWrt OS that corresponds to your board (in my case, using the Raspberry Pi 4 with processor model BCM 2711 was necessary the download link is: https://downloads.openwrt.org/releases/24.10.1/targets/bcm27xx/bcm2711/ ). Note that sometimes on the OpenWrt website, they promote the SquashFS format version, which is slightly faster than Ext4; however, due to being read-only, it cannot be used for partitioning. The trade-off here is worth using the Ext4 format since the difference is negligible. 
 
 2. **Raspberry Pi (or other board)**: Raspberry Pi board (or any other board you are using to boot up your OpenWrt OS). 
 
