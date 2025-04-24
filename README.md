@@ -93,6 +93,8 @@ e2fsck -f /dev/sdb2
 resize2fs /dev/sdb2
 ```
 
+>By recreating /dev/sdb2 with the exact same start sector and an end sector beyond your existing data, you only update the partition table—no formatting occurs, and all original data remains intact and accessible when you remount it.
+
 
 To verify, you can use:
 
